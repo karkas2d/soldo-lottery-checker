@@ -1,3 +1,3 @@
 # soldo-lottery-checker
 
-Check "lottery' block
+Check 'lottery' block
