@@ -1,0 +1,39 @@
+import telebot
+import requests
+import json
+from time import sleep
+bot = telebot.TeleBot('telegram token')
+last_hash=1
+
+while True: 
+          
+        url = "http://localhost:33712/json_rpc"
+        headers = {'content-type': 'application/json'}
+        rpc_input = {"method": "getlastblockheader"}    
+        rpc_input.update({"jsonrpc": "2.0", "id": "0"})
+        get_hash = requests.post(url,data=json.dumps(rpc_input),headers=headers)
+        result = json.dumps(get_hash.json()['result']['block_header']['hash'])
+        hash = result.replace('"','')
+        if hash != last_hash:
+                rpc_input = {"method": "block_json","params":{"hash" : hash}}
+                get_block_info = requests.post(url,data=json.dumps(rpc_input), headers=headers)
+                #block_size = json.dumps(get_block_info.json()['result']['block']['blockSize'])
+                #bs=int(block_size)
+                height = json.dumps(get_block_info.json()['result']['block']['height'])
+                reward = int(json.dumps(get_block_info.json()['result']['block']['reward']))
+        
+                if reward == 10000000000 or reward == 10000000001:
+                                bot.send_message(chat_id, 'Reward 100 SLD. Block: '+height)
+                                last_hash=hash
+                elif reward == 100000000000 or reward == 100000000001:
+                                bot.send_message(chat_id, 'Reward 1000 SLD! BLOCK: '+height+'. Incredible! Check your wallets, maybe you are lucky! ')
+                                last_hash=hash
+                elif reward == 1000000000000 or reward == 1000000000001:
+                                bot.send_message(chat_id, 'Reward = x10000 SLD '+' Block Hash: '+'http://ex.soldo.in/block.php?hash='+hash)
+                                last_hash=hash
+                elif reward == 10000000000000 or reward == 10000000000001:
+                                bot.send_message(chat_id, 'Reward = x100000 SLD '+' Блок: '+height)
+                                last_hash=hash
+        
+sleep(1)
+
